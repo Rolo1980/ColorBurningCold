@@ -107,6 +107,13 @@
             // Ocultar el botón después de activar la pantalla completa
             document.getElementById('fullscreenButton').style.display = 'none';
         }
+
+        // Mostrar el botón nuevamente cuando se salga del modo de pantalla completa
+        document.addEventListener("fullscreenchange", function() {
+            if (!document.fullscreenElement) {
+                document.getElementById('fullscreenButton').style.display = 'block';
+            }
+        });
     </script>
 </body>
 </html>
