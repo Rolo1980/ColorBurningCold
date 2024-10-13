@@ -9,15 +9,41 @@
             margin: 0;
             height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            font-size: 2em;
+            justify-content: flex-start;
+            background-color: white;
             transition: background-color 0.5s ease;
+        }
+        #colorText {
+            width: 100%;
+            text-align: center;
+            padding: 20px;
+            font-size: 2em;
+            background-color: rgba(0, 0, 0, 0.7); /* Fondo oscuro semi-transparente */
+            color: white; /* Texto blanco */
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+        #fullscreenButton {
+            position: fixed;
+            bottom: 20px;
+            font-size: 1.5em;
+            padding: 10px 20px;
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div id="colorText">Cargando color...</div>
+    <div id="colorText">Burning Cold dice!!!: Cargando color...</div>
+
+    <!-- Botón para activar pantalla completa -->
+    <button id="fullscreenButton" onclick="launchFullScreen(document.documentElement)">Pantalla Completa</button>
 
     <!-- Firebase JS SDK (versión 8) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -40,7 +66,7 @@
         function cambiarColor(color) {
             console.log("Cambiando color a:", color);  // Depuración
             document.body.style.backgroundColor = color;
-            document.getElementById('colorText').innerText = `Color actual: ${color}`;
+            document.getElementById('colorText').innerText = `Burning Cold dice!!!: ${color}`;
         }
 
         // Escuchar cambios en el valor del color en la base de datos
@@ -66,6 +92,19 @@
                     break;
             }
         });
+
+        // Forzar pantalla completa
+        function launchFullScreen(element) {
+            if (element.requestFullscreen) {
+                element.requestFullscreen();
+            } else if (element.mozRequestFullScreen) { // Firefox
+                element.mozRequestFullScreen();
+            } else if (element.webkitRequestFullscreen) { // Chrome, Safari, Opera
+                element.webkitRequestFullscreen();
+            } else if (element.msRequestFullscreen) { // IE/Edge
+                element.msRequestFullscreen();
+            }
+        }
     </script>
 </body>
 </html>
