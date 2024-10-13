@@ -18,9 +18,8 @@
         #colorText {
             width: 100%;
             text-align: center;
-            padding: 20px;
-            font-size: 2em;
-            background-color: rgba(0, 0, 0, 0.7); /* Fondo oscuro semi-transparente */
+            padding: 10px;
+            font-size: 1.5em; /* Tamaño de letra más pequeño */
             color: white; /* Texto blanco */
             position: fixed;
             top: 0;
@@ -93,7 +92,7 @@
             }
         });
 
-        // Forzar pantalla completa
+        // Forzar pantalla completa y ocultar botón
         function launchFullScreen(element) {
             if (element.requestFullscreen) {
                 element.requestFullscreen();
@@ -104,6 +103,9 @@
             } else if (element.msRequestFullscreen) { // IE/Edge
                 element.msRequestFullscreen();
             }
+
+            // Ocultar el botón después de activar la pantalla completa
+            document.getElementById('fullscreenButton').style.display = 'none';
         }
     </script>
 </body>
