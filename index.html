@@ -53,7 +53,7 @@
             text-align: center; /* Centrar texto */
         }
         #welcomeLogo {
-            max-width: 30%; /* Ajustar tamaño del logo a un 50% */
+            max-width: 25%; /* Ajustar tamaño del logo a un 50% */
             height: auto; /* Mantener proporciones */
             margin-bottom: 20px;
         }
@@ -78,7 +78,7 @@
 <body>
     <div id="welcomeScreen">
         <img id="welcomeLogo" src="https://github.com/Rolo1980/ColorBurningCold/raw/main/Logo%20burning.PNG" alt="Logo Burning Cold">
-        <h1>¡Bienvenido a Burning Cold!</h1>
+        <h1>¡Bienvenidos! Gracias por divertirte con Burning Cold!</h1>
         <button id="enterButton" onclick="enterColorScreen()">Entrar</button>
         <div id="currentColor">Color actual: Cargando...</div> <!-- Mostrar color actual -->
     </div>
@@ -104,6 +104,14 @@
         // Conexión a la base de datos en tiempo real
         var database = firebase.database();
         var colorRef = database.ref('BurningApp/color');
+        var danceRef = database.ref('BurningApp/opcion');
+
+        // Variables para manejar el estado de las opciones
+        let danceActive = false;
+        let parpadeo1Active = false;
+        let revolucionActive = false;
+        let currentColor = "white"; // Inicializa un color actual
+        let revolucionInterval;
 
         // Función para cambiar el color de fondo
         function cambiarColor(color) {
@@ -111,16 +119,59 @@
             document.body.style.backgroundColor = color;
             document.getElementById('colorText').innerText = `Burning Cold dice!!!: ${color}`;
             document.getElementById('currentColor').innerText = `Color actual: ${color}`; // Actualizar color actual
+            currentColor = color; // Guardar el color actual
+        }
+
+        // Función para hacer parpadear los colores
+        function parpadearColores() {
+            let colors = ["blue", "red", "yellow"];
+            let index = 0;
+
+            let interval = setInterval(() => {
+                if (danceActive) {
+                    document.body.style.backgroundColor = colors[index];
+                    index = (index + 1) % colors.length;
+                } else {
+                    clearInterval(interval);
+                }
+            }, 300); // Tiempo de cambio de color ms
+        }
+
+        // Función para hacer parpadear un solo color
+        function parpadearColor(color) {
+            let index = 0;
+            let interval = setInterval(() => {
+                if (parpadeo1Active) {
+                    document.body.style.backgroundColor = (index % 2 === 0) ? color : "white";
+                    index++;
+                } else {
+                    clearInterval(interval);
+                }
+            }, 500); // Tiempo de cambio de color en milisegundos
+        }
+
+        // Función para mezclar colores aleatoriamente
+        function revolucion() {
+            revolucionActive = true;
+            // Agregar más colores al arreglo
+            let colors = [
+                "blue", "red", "yellow", "green", "purple", "orange", "cyan", "magenta",
+                "lime", "teal", "navy", "pink", "brown", "lightblue", "lightgreen", "gold"
+            ];
+            revolucionInterval = setInterval(() => {
+                if (revolucionActive) {
+                    let randomColor = colors[Math.floor(Math.random() * colors.length)];
+                    document.body.style.backgroundColor = randomColor;
+                }
+            }, 300); // Cambia el color cada 300ms
         }
 
         // Escuchar cambios en el valor del color en la base de datos
         colorRef.on('value', function(snapshot) {
             var color = snapshot.val();
-
-            // Eliminar comillas dobles si están presentes
             color = color.replace(/['"]+/g, '');  // Elimina comillas
-
             console.log("Valor leído desde Firebase sin comillas:", color);  // Depuración
+
             switch (color) {
                 case "Azul":
                     cambiarColor("blue");
@@ -137,6 +188,29 @@
             }
         });
 
+        // Escuchar cambios en la opción de bailar en la base de datos
+        danceRef.on('value', function(snapshot) {
+            var opcion = snapshot.val();
+            opcion = opcion.replace(/['"]+/g, '');  // Elimina comillas
+            console.log("Opción leída desde Firebase sin comillas:", opcion);  // Depuración
+
+            if (opcion === "bailar") {
+                danceActive = true; // Activar el parpadeo
+                parpadearColores();
+            } else if (opcion === "parpadeo1") {
+                parpadeo1Active = true; // Activar parpadeo1
+                parpadearColor(currentColor);
+            } else if (opcion === "revolucion") {
+                revolucion(); // Iniciar revolucion
+            } else if (opcion === "STOP") {
+                danceActive = false; // Detener el parpadeo
+                parpadeo1Active = false; // Detener parpadeo1
+                revolucionActive = false; // Detener revolución
+                clearInterval(revolucionInterval); // Limpiar intervalo de revolución
+                cambiarColor(currentColor); // Queda el color seleccionado
+            }
+        });
+
         // Función para entrar en la pantalla de colores
         function enterColorScreen() {
             document.getElementById('welcomeScreen').style.display = 'none'; // Ocultar pantalla de bienvenida
@@ -148,24 +222,15 @@
         function launchFullScreen(element) {
             if (element.requestFullscreen) {
                 element.requestFullscreen();
-            } else if (element.mozRequestFullScreen) { // Firefox
+            } else if (element.mozRequestFullScreen) {
                 element.mozRequestFullScreen();
-            } else if (element.webkitRequestFullscreen) { // Chrome, Safari, Opera
+            } else if (element.webkitRequestFullscreen) {
                 element.webkitRequestFullscreen();
-            } else if (element.msRequestFullscreen) { // IE/Edge
+            } else if (element.msRequestFullscreen) {
                 element.msRequestFullscreen();
             }
-
-            // Ocultar el botón después de activar la pantalla completa
-            document.getElementById('fullscreenButton').style.display = 'none';
+            document.getElementById('fullscreenButton').style.display = 'none'; // Ocultar botón
         }
-
-        // Mostrar el botón nuevamente cuando se salga del modo de pantalla completa
-        document.addEventListener("fullscreenchange", function() {
-            if (!document.fullscreenElement) {
-                document.getElementById('fullscreenButton').style.display = 'block';
-            }
-        });
     </script>
 </body>
 </html>
