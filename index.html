@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantalla de Color</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            transition: background-color 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div id="colorText">Cargando color...</div>
+
+    <!-- Firebase JS SDK (versión 8) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        // Configuración de Firebase (solo la URL de la base de datos)
+        var firebaseConfig = {
+            databaseURL: "https://colorburningcold-default-rtdb.firebaseio.com"
+        };
+
+        // Inicializamos Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Conexión a la base de datos en tiempo real
+        var database = firebase.database();
+        var colorRef = database.ref('BurningApp/color');
+
+        // Función para cambiar el color de fondo
+        function cambiarColor(color) {
+            console.log("Cambiando color a:", color);  // Depuración
+            document.body.style.backgroundColor = color;
+            document.getElementById('colorText').innerText = `Color actual: ${color}`;
+        }
+
+        // Escuchar cambios en el valor del color en la base de datos
+        colorRef.on('value', function(snapshot) {
+            var color = snapshot.val();
+
+            // Eliminar comillas dobles si están presentes
+            color = color.replace(/['"]+/g, '');  // Elimina comillas
+
+            console.log("Valor leído desde Firebase sin comillas:", color);  // Depuración
+            switch (color) {
+                case "Azul":
+                    cambiarColor("blue");
+                    break;
+                case "Rojo":
+                    cambiarColor("red");
+                    break;
+                case "Amarillo":
+                    cambiarColor("yellow");
+                    break;
+                default:
+                    cambiarColor("white");
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>
