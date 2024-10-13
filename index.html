@@ -61,44 +61,11 @@
         var database = firebase.database();
         var colorRef = database.ref('BurningApp/color');
 
-        let currentColor = { r: 255, g: 255, b: 255 }; // Color inicial (blanco)
-        let targetColor = { r: 255, g: 255, b: 255 }; // Color objetivo
-
-        // Función para cambiar el color de fondo con fusión
+        // Función para cambiar el color de fondo
         function cambiarColor(color) {
             console.log("Cambiando color a:", color);  // Depuración
-            const [r, g, b] = colorToRgb(color);
-            targetColor = { r, g, b };
-            animateColorTransition();
-        }
-
-        // Convertir nombre de color a valores RGB
-        function colorToRgb(color) {
-            const colors = {
-                'blue': [0, 0, 255],
-                'red': [255, 0, 0],
-                'yellow': [255, 255, 0],
-                'white': [255, 255, 255]
-            };
-            return colors[color] || [255, 255, 255]; // Blanco como color por defecto
-        }
-
-        // Función para animar la transición de colores
-        function animateColorTransition() {
-            function update() {
-                // Interpolación de colores
-                currentColor.r += (targetColor.r - currentColor.r) * 0.1;
-                currentColor.g += (targetColor.g - currentColor.g) * 0.1;
-                currentColor.b += (targetColor.b - currentColor.b) * 0.1;
-
-                document.body.style.backgroundColor = `rgb(${Math.round(currentColor.r)}, ${Math.round(currentColor.g)}, ${Math.round(currentColor.b)})`;
-
-                // Continuar la animación si no se ha alcanzado el color objetivo
-                if (Math.abs(currentColor.r - targetColor.r) > 1 || Math.abs(currentColor.g - targetColor.g) > 1 || Math.abs(currentColor.b - targetColor.b) > 1) {
-                    requestAnimationFrame(update);
-                }
-            }
-            requestAnimationFrame(update);
+            document.body.style.backgroundColor = color;
+            document.getElementById('colorText').innerText = `Burning Cold dice!!!: ${color}`;
         }
 
         // Escuchar cambios en el valor del color en la base de datos
@@ -109,7 +76,20 @@
             color = color.replace(/['"]+/g, '');  // Elimina comillas
 
             console.log("Valor leído desde Firebase sin comillas:", color);  // Depuración
-            cambiarColor(color);
+            switch (color) {
+                case "Azul":
+                    cambiarColor("blue");
+                    break;
+                case "Rojo":
+                    cambiarColor("red");
+                    break;
+                case "Amarillo":
+                    cambiarColor("yellow");
+                    break;
+                default:
+                    cambiarColor("white");
+                    break;
+            }
         });
 
         // Forzar pantalla completa y ocultar botón
@@ -137,4 +117,3 @@
     </script>
 </body>
 </html>
-
